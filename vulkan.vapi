@@ -16,7 +16,7 @@
 ** limitations under the License.
 */
 
-[CCode (cprefix = "Vk", clower_prefix = "vk_", cheader_filename = "vulkan.h")]
+[CCode (cprefix = "Vk", lower_case_cprefix = "vk", cheader_filename = "vulkan/vulkan.h")]
 namespace Vulkan
 {
 	public const int VERSION_1_0;
@@ -45,52 +45,55 @@ namespace Vulkan
 
 	public Result CreateInstance (InstanceCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Instance pInstance);
 
-	[CCode (cprefix = "vk", has_type_id = false)]
+	[CCode (lower_case_cprefix = "vk", has_type_id = false)]
 	public struct Instance
 	{
 		public Result EnumeratePhysicalDevices ([CCode (array_length_pos = 0.9)] out PhysicalDevice[] pPhysicalDevices);
 		public void GetInstanceProcAddr (string pName);
+		[DestroysInstance]
 		public void DestroyInstance (AllocationCallbacks pAllocator);
 		public Result CreateDebugReportCallbackEXT (DebugReportCallbackCreateInfoEXT pCreateInfo, AllocationCallbacks pAllocator, DebugReportCallbackEXT pCallback);
-		public void DestroyDebugReportCallbackEXT (DebugReportCallbackEXT callback, AllocationCallbacks pAllocator);
+		public void DestroyDebugReportCallbackEXT (owned DebugReportCallbackEXT callback, AllocationCallbacks pAllocator);
 		public void DebugReportMessageEXT (DebugReportFlagsEXT flags, DebugReportObjectTypeEXT objectType, uint64 object, size_t location, int32 messageCode, string pLayerPrefi, string pMessage);
-		public Result CreateDisplayPlaneSurfaceKHR(DisplaySurfaceCreateInfoKHR* pCreateInfo, AllocationCallbacks pAllocator, SurfaceKHR* pSurface);
+		public Result CreateDisplayPlaneSurfaceKHR(DisplaySurfaceCreateInfoKHR pCreateInfo, AllocationCallbacks pAllocator, out SurfaceKHR pSurface);
+		public void DestroySurfaceKHR(owned SurfaceKHR surface, AllocationCallbacks pAllocator);
 	}
 
-	[CCode (cprefix = "vk", has_type_id = false)]
-	public struct PhysicalDevice {
-		public Result EnumerateDeviceEtensionProperties( string pLayerName, uint32* pPropertyCount, EtensionProperties* pProperties);
-		public Result EnumerateDeviceLayerProperties( uint32* pPropertyCount, LayerProperties* pProperties);
+	[CCode (lower_case_cprefix = "vk", has_type_id = false)]
+	public struct PhysicalDevice
+	{
+		public Result EnumerateDeviceExtensionProperties (string pLayerName, [CCode (array_length_pos = 1.9)] out ExtensionProperties[] pProperties);
+		public Result EnumerateDeviceLayerProperties ([CCode (array_length_pos = 0.9)] out LayerProperties[] pProperties);
 		public void GetPhysicalDeviceSparseImageFormatProperties ( Format format, ImageType type, SampleCountFlags samples, ImageUsageFlags usage, ImageTiling tiling, [CCode (array_length_pos =  "5.1")] out SparseImageFormatProperties[] pProperties);
-		public Result CreateDevice (DeviceCreateInfo* pCreateInfo, AllocationCallbacks pAllocator, out Device pDevice);
+		public Result CreateDevice (DeviceCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Device pDevice);
 		public void GetPhysicalDeviceFeatures (PhysicalDeviceFeatures pFeatures);
 		public void GetPhysicalDeviceFormatProperties (Format format, FormatProperties pFormatProperties);
-		public Result GetPhysicalDeviceImageFormatProperties( Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags, ImageFormatProperties pImageFormatProperties);
-		public void GetPhysicalDeviceProperties( PhysicalDeviceProperties* pProperties);
+		public Result GetPhysicalDeviceImageFormatProperties ( Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags, ImageFormatProperties pImageFormatProperties);
+		public void GetPhysicalDeviceProperties (out PhysicalDeviceProperties pProperties);
 		public void GetPhysicalDeviceQueueFamilyProperties ([CCode (array_length_pos = 0.9)] out QueueFamilyProperties[] pQueueFamilyProperties);
 		public void GetPhysicalDeviceMemoryProperties([CCode (array_length_pos = 0.9)] out PhysicalDeviceMemoryProperties[] pMemoryProperties);
-		public Result GetPhysicalDeviceSurfaceSupportKHR( uint32 queueFamilyInde, SurfaceKHR surface, out bool pSupported);
+		public Result GetPhysicalDeviceSurfaceSupportKHR( uint32 queueFamilyIndex, SurfaceKHR surface, out bool pSupported);
 		public Result GetPhysicalDeviceSurfaceCapabilitiesKHR( SurfaceKHR surface, SurfaceCapabilitiesKHR* pSurfaceCapabilities);
-		public Result GetPhysicalDeviceSurfaceFormatsKHR( SurfaceKHR surface, [CCode (array_length_cname = "pSurfaceFormatCount")] SurfaceFormatKHR[] pSurfaceFormats);
-		public Result GetPhysicalDeviceSurfacePresentModesKHR( SurfaceKHR surface, [CCode (array_length_cname = "pPresentModeCount")] PresentModeKHR[] pPresentModes);
-		public Result GetPhysicalDeviceDisplayPropertiesKHR(uint32* pPropertyCount, DisplayPropertiesKHR* pProperties);
-		public Result GetPhysicalDeviceDisplayPlanePropertiesKHR([CCode (array_length_pos = "0.9")] out DisplayPlanePropertiesKHR[] pProperties);
-		public Result GetDisplayPlaneSupportedDisplaysKHR(uint32 planeInde, uint32* pDisplayCount, DisplayKHR* pDisplays);
-		public Result GetDisplayModePropertiesKHR(DisplayKHR display, [CCode (array_length_pos = "1.9")] out DisplayModePropertiesKHR[] pProperties);
+		public Result GetPhysicalDeviceSurfaceFormatsKHR( SurfaceKHR surface, [CCode (array_length_pos = 1.9)] SurfaceFormatKHR[] pSurfaceFormats);
+		public Result GetPhysicalDeviceSurfacePresentModesKHR( SurfaceKHR surface, [CCode (array_length_pos = 1.9)] PresentModeKHR[] pPresentModes);
+		public Result GetPhysicalDeviceDisplayPropertiesKHR([CCode (array_length_cname = 0.9)] out DisplayPropertiesKHR[] pProperties);
+		public Result GetPhysicalDeviceDisplayPlanePropertiesKHR([CCode (array_length_pos = 0.9)] out DisplayPlanePropertiesKHR[] pProperties);
+		public Result GetDisplayPlaneSupportedDisplaysKHR(uint32 planeIndex, [CCode (array_length_pos = 1.9)] out DisplayKHR[] pDisplays);
+		public Result GetDisplayModePropertiesKHR(DisplayKHR display, [CCode (array_length_pos = 1.9)] out DisplayModePropertiesKHR[] pProperties);
 		public Result CreateDisplayModeKHR(DisplayKHR display, DisplayModeCreateInfoKHR pCreateInfo, AllocationCallbacks pAllocator, out DisplayModeKHR pMode);
-		public Result GetDisplayPlaneCapabilitiesKHR(DisplayModeKHR mode, uint32 planeInde, DisplayPlaneCapabilitiesKHR* pCapabilities);
+		public Result GetDisplayPlaneCapabilitiesKHR(DisplayModeKHR mode, uint32 planeIndex, out DisplayPlaneCapabilitiesKHR pCapabilities);
 	}
 
-	[CCode (cprefix = "vk", has_type_id = false)]
+	[CCode (lower_case_cprefix = "vk", has_type_id = false)]
 	public struct Device
 	{
 		public void GetDeviceProcAddr (string pName);
-		public void GetDeviceQueue( uint32 queueFamilyInde, uint32 queueInde, Queue* pQueue);
+		public void GetDeviceQueue( uint32 queueFamilyIndex, uint32 queueIndex, Queue* pQueue);
 		public Result AllocateMemory(MemoryAllocateInfo  pAllocateInfo, AllocationCallbacks pAllocator, DeviceMemory pMemory);
 		public void FreeMemory(DeviceMemory memory, AllocationCallbacks pAllocator);
 		public Result MapMemory(DeviceMemory memory, DeviceSize offset, DeviceSize size, MemoryMapFlags flags, void** ppData);
 		public void UnmapMemory(DeviceMemory memory);
-		public Result FlushMappedMemoryRanges (uint32 memoryRangeCount, MappedMemoryRange* pMemoryRanges);
+		public Result FlushMappedMemoryRanges ([CCode (array_length_pos = "0.9")] MappedMemoryRange pMemoryRanges);
 		public Result InvalidateMappedMemoryRanges ([CCode (array_length_pos = "0.9")] MappedMemoryRange[] pMemoryRanges);
 		public void GetDeviceMemoryCommitment (DeviceMemory memory, out DeviceSize pCommittedMemoryInBytes);
 		public Result BindBufferMemory( Buffer buffer, DeviceMemory memory, DeviceSize memoryOffset);
@@ -100,130 +103,141 @@ namespace Vulkan
 		public void GetImageSparseMemoryRequirements (Image image, [CCode (array_length_pos = "1.9")] out SparseImageMemoryRequirements[] pSparseMemoryRequirements);
 		public Result DeviceWaitIdle ();
 		public Result CreateFence( FenceCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Fence pFence);
-		public void DestroyFence (Fence fence, AllocationCallbacks pAllocator);
-		public Result ResetFences ([CCode (array_length_pos = "0.9")] Fence pFences);
+		public void DestroyFence (owned Fence fence, AllocationCallbacks pAllocator);
+		public Result ResetFences ([CCode (array_length_pos = "0.9")] Fence[] pFences);
 		public Result GetFenceStatus ( Fence fence);
 		public Result WaitForFences ([CCode (array_length_pos = "0.9")] Fence[] pFences, bool waitAll, uint64 timeout);
 		public Result CreateSemaphore (SemaphoreCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Semaphore pSemaphore);
-		public void DestroySemaphore( Semaphore                                 semaphore, AllocationCallbacks                pAllocator);
-		public Result CreateEvent( EventCreateInfo* pCreateInfo, AllocationCallbacks pAllocator, out Event pEvent);
-		public void DestroyEvent( Event                                     event, AllocationCallbacks                pAllocator);
-		public Result GetEventStatus( Event                                     event);
-		public Result SetEvent( Event                                     event);
-		public Result ResetEvent( Event                                     event);
-		public Result CreateQueryPool( QueryPoolCreateInfo*                pCreateInfo, AllocationCallbacks                pAllocator, QueryPool*                                pQueryPool);
-		public void DestroyQueryPool( QueryPool                                 queryPool, AllocationCallbacks                pAllocator);
-		public Result GetQueryPoolResults( QueryPool                                 queryPool, uint32                                    firstQuery, uint32                                    queryCount, size_t                                      dataSize, void*                                       pData, DeviceSize                                stride, QueryResultFlags                          flags);
-		public Result CreateBuffer( BufferCreateInfo*                   pCreateInfo, AllocationCallbacks                pAllocator, Buffer*                                   pBuffer);
-		public void DestroyBuffer( Buffer                                    buffer, AllocationCallbacks                pAllocator);
-		public Result CreateBufferView( BufferViewCreateInfo*               pCreateInfo, AllocationCallbacks                pAllocator, BufferView*                               pView);
-		public void DestroyBufferView( BufferView                                bufferView, AllocationCallbacks                pAllocator);
-		public Result CreateImage( ImageCreateInfo*                    pCreateInfo, AllocationCallbacks                pAllocator, Image*                                    pImage);
-		public void DestroyImage( Image                                     image, AllocationCallbacks                pAllocator);
-		public void GetImageSubresourceLayout( Image                                     image, ImageSubresource*                   pSubresource, SubresourceLayout*                        pLayout);
-		public Result CreateImageView( ImageViewCreateInfo*                pCreateInfo, AllocationCallbacks                pAllocator, ImageView*                                pView);
-		public void DestroyImageView( ImageView                                 imageView, AllocationCallbacks                pAllocator);
-		public Result CreateShaderModule( ShaderModuleCreateInfo*             pCreateInfo, AllocationCallbacks                pAllocator, ShaderModule*                             pShaderModule);
-		public void DestroyShaderModule( ShaderModule                              shaderModule, AllocationCallbacks                pAllocator);
-		public Result CreatePipelineCache( PipelineCacheCreateInfo*            pCreateInfo, AllocationCallbacks                pAllocator, PipelineCache*                            pPipelineCache);
-		public void DestroyPipelineCache( PipelineCache                             pipelineCache, AllocationCallbacks                pAllocator);
-		public Result GetPipelineCacheData( PipelineCache                             pipelineCache, size_t*                                     pDataSize, void*                                       pData);
-		public Result MergePipelineCaches( PipelineCache                             dstCache, uint32                                    srcCacheCount, PipelineCache*                      pSrcCaches);
-		public Result CreateGraphicsPipelines( PipelineCache                             pipelineCache, uint32                                    createInfoCount, GraphicsPipelineCreateInfo*         pCreateInfos, AllocationCallbacks                pAllocator, Pipeline*                                 pPipelines);
-		public Result CreateComputePipelines( PipelineCache                             pipelineCache, uint32                                    createInfoCount, ComputePipelineCreateInfo*          pCreateInfos, AllocationCallbacks                pAllocator, Pipeline*                                 pPipelines);
-		public void DestroyPipeline( Pipeline                                  pipeline, AllocationCallbacks                pAllocator);
-		public Result CreatePipelineLayout( PipelineLayoutCreateInfo*           pCreateInfo, AllocationCallbacks                pAllocator, PipelineLayout*                           pPipelineLayout);
-		public void DestroyPipelineLayout( PipelineLayout                            pipelineLayout, AllocationCallbacks                pAllocator);
-		public Result CreateSampler( SamplerCreateInfo*                  pCreateInfo, AllocationCallbacks                pAllocator, Sampler*                                  pSampler);
-		public void DestroySampler( Sampler                                   sampler, AllocationCallbacks                pAllocator);
-		public Result CreateDescriptorSetLayout( DescriptorSetLayoutCreateInfo*      pCreateInfo, AllocationCallbacks                pAllocator, DescriptorSetLayout*                      pSetLayout);
-		public void DestroyDescriptorSetLayout( DescriptorSetLayout                       descriptorSetLayout, AllocationCallbacks                pAllocator);
-		public Result CreateDescriptorPool( DescriptorPoolCreateInfo*           pCreateInfo, AllocationCallbacks                pAllocator, DescriptorPool*                           pDescriptorPool);
-		public void DestroyDescriptorPool( DescriptorPool                            descriptorPool, AllocationCallbacks                pAllocator);
-		public Result ResetDescriptorPool( DescriptorPool                            descriptorPool, DescriptorPoolResetFlags                  flags);
-		public Result AllocateDescriptorSets( DescriptorSetAllocateInfo*          pAllocateInfo, DescriptorSet*                            pDescriptorSets);
-		public Result FreeDescriptorSets( DescriptorPool                            descriptorPool, uint32                                    descriptorSetCount, DescriptorSet*                      pDescriptorSets);
-		public void UpdateDescriptorSets( uint32                                    descriptorWriteCount, WriteDescriptorSet*                 pDescriptorWrites, uint32                                    descriptorCopyCount, CopyDescriptorSet*                  pDescriptorCopies);
-		public Result CreateFramebuffer( FramebufferCreateInfo*              pCreateInfo, AllocationCallbacks                pAllocator, Framebuffer*                              pFramebuffer);
-		public void DestroyFramebuffer( Framebuffer                               framebuffer, AllocationCallbacks                pAllocator);
-		public Result CreateRenderPass( RenderPassCreateInfo*               pCreateInfo, AllocationCallbacks                pAllocator, RenderPass*                               pRenderPass);
-		public void DestroyRenderPass( RenderPass                                renderPass, AllocationCallbacks                pAllocator);
-		public void GetRenderAreaGranularity( RenderPass                                renderPass, Etent2D*                                 pGranularity);
-		public Result CreateCommandPool( CommandPoolCreateInfo*              pCreateInfo, AllocationCallbacks                pAllocator, CommandPool*                              pCommandPool);
-		public void DestroyCommandPool( CommandPool                               commandPool, AllocationCallbacks                pAllocator);
+		public void DestroySemaphore(owned Semaphore semaphore, AllocationCallbacks pAllocator);
+		public Result CreateEvent( EventCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Event pEvent);
+		public void DestroyEvent(owned Event event, AllocationCallbacks pAllocator);
+		public Result GetEventStatus( Event event);
+		public Result SetEvent( Event event);
+		public Result ResetEvent( Event event);
+		public Result CreateQueryPool( QueryPoolCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out QueryPool pQueryPool);
+		public void DestroyQueryPool(owned QueryPool queryPool, AllocationCallbacks pAllocator);
+		public Result GetQueryPoolResults( QueryPool queryPool, uint32 firstQuery, uint32 queryCount, size_t dataSize, void* pData, DeviceSize stride, QueryResultFlags flags);
+		public Result CreateBuffer( BufferCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Buffer pBuffer);
+		public void DestroyBuffer(owned Buffer buffer, AllocationCallbacks pAllocator);
+		public Result CreateBufferView( BufferViewCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out BufferView pView);
+		public void DestroyBufferView(owned BufferView bufferView, AllocationCallbacks pAllocator);
+		public Result CreateImage( ImageCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Image pImage);
+		public void DestroyImage(owned Image image, AllocationCallbacks pAllocator);
+		public void GetImageSubresourceLayout( Image image, out ImageSubresource pSubresource, out SubresourceLayout pLayout);
+		public Result CreateImageView( ImageViewCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out ImageView pView);
+		public void DestroyImageView(owned ImageView imageView, AllocationCallbacks pAllocator);
+		public Result CreateShaderModule( ShaderModuleCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out ShaderModule pShaderModule);
+		public void DestroyShaderModule(owned ShaderModule shaderModule, AllocationCallbacks pAllocator);
+		public Result CreatePipelineCache( PipelineCacheCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out PipelineCache pPipelineCache);
+		public void DestroyPipelineCache(owned PipelineCache pipelineCache, AllocationCallbacks pAllocator);
+		public Result GetPipelineCacheData( PipelineCache pipelineCache, size_t* pDataSize, void* pData);
+		public Result MergePipelineCaches( PipelineCache dstCache, [CCode (array_length_pos = 1.9)] PipelineCache[] pSrcCaches);
+		// FIXME: number of pipelines created is known in advance
+		public Result CreateGraphicsPipelines( PipelineCache pipelineCache, uint32 createInfoCount, GraphicsPipelineCreateInfo pCreateInfos, AllocationCallbacks pAllocator, out Pipeline[] pPipelines);
+		public Result CreateComputePipelines( PipelineCache pipelineCache, uint32 createInfoCount, ComputePipelineCreateInfo pCreateInfos, AllocationCallbacks pAllocator, out Pipeline[] pPipelines);
+		public void DestroyPipeline(owned Pipeline pipeline, AllocationCallbacks pAllocator);
+		public Result CreatePipelineLayout( PipelineLayoutCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out PipelineLayout pPipelineLayout);
+		public void DestroyPipelineLayout(owned PipelineLayout pipelineLayout, AllocationCallbacks pAllocator);
+		public Result CreateSampler( SamplerCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Sampler pSampler);
+		public void DestroySampler(owned Sampler sampler, AllocationCallbacks pAllocator);
+		public Result CreateDescriptorSetLayout( DescriptorSetLayoutCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out DescriptorSetLayout pSetLayout);
+		public void DestroyDescriptorSetLayout(owned DescriptorSetLayout descriptorSetLayout, AllocationCallbacks pAllocator);
+		public Result CreateDescriptorPool( DescriptorPoolCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out DescriptorPool pDescriptorPool);
+		public void DestroyDescriptorPool(owned DescriptorPool descriptorPool, AllocationCallbacks pAllocator);
+		public Result ResetDescriptorPool( DescriptorPool descriptorPool, DescriptorPoolResetFlags flags);
+		public Result AllocateDescriptorSets( DescriptorSetAllocateInfo pAllocateInfo, DescriptorSet* pDescriptorSets);
+		public Result FreeDescriptorSets( DescriptorPool descriptorPool, [CCode (array_length_pos = 1.9)] DescriptorSet[] pDescriptorSets);
+		public void UpdateDescriptorSets([CCode (array_length_pos = 0.9)] WriteDescriptorSet pDescriptorWrites, [CCode (array_length_pos = 2.9)] CopyDescriptorSet[] pDescriptorCopies);
+		public Result CreateFramebuffer( FramebufferCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out Framebuffer pFramebuffer);
+		public void DestroyFramebuffer(owned Framebuffer                               framebuffer, AllocationCallbacks                pAllocator);
+		public Result CreateRenderPass( RenderPassCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out RenderPass pRenderPass);
+		public void DestroyRenderPass(owned RenderPass                                renderPass, AllocationCallbacks                pAllocator);
+		public void GetRenderAreaGranularity( RenderPass                                renderPass, Extent2D*                                 pGranularity);
+		public Result CreateCommandPool( CommandPoolCreateInfo pCreateInfo, AllocationCallbacks pAllocator, out CommandPool pCommandPool);
+		public void DestroyCommandPool(owned CommandPool                               commandPool, AllocationCallbacks                pAllocator);
 		public Result ResetCommandPool( CommandPool commandPool, CommandPoolResetFlags flags);
-		public Result AllocateCommandBuffers( CommandBufferAllocateInfo*          pAllocateInfo, CommandBuffer*                            pCommandBuffers);
-		public void FreeCommandBuffers(CommandPool commandPool, uint32 commandBufferCount, [CCode (array_length_pos = "1.9")] CommandBuffer[] pCommandBuffers);
+		public Result AllocateCommandBuffers( CommandBufferAllocateInfo          pAllocateInfo, CommandBuffer*                            pCommandBuffers);
+		public void FreeCommandBuffers(CommandPool commandPool, [CCode (array_length_pos = "1.9")] CommandBuffer[] pCommandBuffers);
+		[DestroysInstance]
 		public void DestroyDevice (AllocationCallbacks pAllocator);
-		public static Result EnumerateInstanceEtensionProperties (string pLayerName, [CCode (array_length_pos = "1.1")] out EtensionProperties[] pProperties);
-		public static Result EnumerateInstanceLayerProperties ([CCode (array_length_pos = "1.1")] out LayerProperties[] pProperties);
-		public Result DebugMarkerSetObjectTagEXT( DebugMarkerObjectTagInfoEXT* pTagInfo);
-		public Result DebugMarkerSetObjectNameEXT( DebugMarkerObjectNameInfoEXT* pNameInfo);
+		public static Result EnumerateInstanceExtensionProperties (string pLayerName, [CCode (array_length_pos = "1.9")] out ExtensionProperties[] pProperties);
+		public static Result EnumerateInstanceLayerProperties ([CCode (array_length_pos = "0.9")] out LayerProperties[] pProperties);
+		public Result DebugMarkerSetObjectTagEXT( DebugMarkerObjectTagInfoEXT pTagInfo);
+		public Result DebugMarkerSetObjectNameEXT( DebugMarkerObjectNameInfoEXT pNameInfo);
+		public Result CreateSwapchainKHR( SwapchainCreateInfoKHR pCreateInfo, AllocationCallbacks pAllocator, out SwapchainKHR pSwapchain);
+		public void DestroySwapchainKHR(owned SwapchainKHR swapchain, AllocationCallbacks pAllocator);
+		public Result GetSwapchainImagesKHR(SwapchainKHR swapchain, [CCode (array_length_pos = 1.9)] out Image[] pSwapchainImages);
+		public Result AcquireNetImageKHR(SwapchainKHR swapchain, uint64 timeout, Semaphore semaphore, Fence fence, uint32* pImageIndex);
+		public Result CreateSharedSwapchainsKHR([CCode (array_length_pos = 0.9)] SwapchainCreateInfoKHR pCreateInfos, AllocationCallbacks pAllocator, out SwapchainKHR pSwapchains);
 	}
 
-	[CCode (cprefix = "vk", has_type_id = false)]
+	[CCode (lower_case_cprefix = "vk", has_type_id = false)]
 	public struct Queue
 	{
-		public Result QueueSubmit ([CCode (array_len_pos = "0.9")] SubmitInfo[] pSubmits, Fence fence);
+		public Result QueueSubmit ([CCode (array_len_pos = 0.9)] SubmitInfo[] pSubmits, Fence fence);
 		public Result QueueWaitIdle ();
-		public Result QueueBindSparse( [CCode (array_length_pos = 0.9)] BindSparseInfo[]                     pBindInfo, Fence                                     fence);
+		public Result QueueBindSparse( [CCode (array_length_pos = 0.9)] BindSparseInfo[] pBindInfo, Fence fence);
 	}
 
 	[CCode (has_type_id = false)]
 	public struct Semaphore {}
 
-	[CCode (cprefix = "vk", has_type_id = false)]
-	public struct CommandBuffer {
-		public Result BeginCommandBuffer( CommandBufferBeginInfo*             pBeginInfo);
+	[CCode (lower_case_cprefix = "vkCmd", has_type_id = false)]
+	public struct CommandBuffer
+	{
+		[CCode (cname = "vkBeginCommandBuffer")]
+		public Result BeginCommandBuffer( CommandBufferBeginInfo pBeginInfo);
+		[CCode (cname = "vkEndCommandBuffer")]
 		public Result EndCommandBuffer ();
-		public Result ResetCommandBuffer( CommandBufferResetFlags                   flags);
-		public void CmdBindPipeline( PipelineBindPoint                         pipelineBindPoint, Pipeline                                  pipeline);
-		public void CmdSetViewport( uint32                                    firstViewport, uint32                                    viewportCount, Viewport*                           pViewports);
-		public void CmdSetScissor( uint32                                    firstScissor, uint32                                    scissorCount, Rect2D*                             pScissors);
-		public void CmdSetLineWidth( float                                       lineWidth);
-		public void CmdSetDepthBias( float                                       depthBiasConstantFactor, float                                       depthBiasClamp, float                                       depthBiasSlopeFactor);
-		public void CmdSetBlendConstants( float                                 blendConstants[4]);
-		public void CmdSetDepthBounds( float                                       minDepthBounds, float                                       maDepthBounds);
-		public void CmdSetStencilCompareMask( StencilFaceFlags                          faceMask, uint32                                    compareMask);
-		public void CmdSetStencilWriteMask( StencilFaceFlags                          faceMask, uint32                                    writeMask);
-		public void CmdSetStencilReference( StencilFaceFlags                          faceMask, uint32                                    reference);
-		public void CmdBindDescriptorSets( PipelineBindPoint                         pipelineBindPoint, PipelineLayout                            layout, uint32                                    firstSet, uint32                                    descriptorSetCount, DescriptorSet*                      pDescriptorSets, uint32                                    dynamicOffsetCount, uint32*                             pDynamicOffsets);
-		public void CmdBindIndeBuffer( Buffer                                    buffer, DeviceSize                                offset, IndeType                                 indeType);
-		public void CmdBindVerteBuffers( uint32                                    firstBinding, uint32                                    bindingCount, Buffer*                             pBuffers, DeviceSize*                         pOffsets);
-		public void CmdDraw( uint32                                    verteCount, uint32                                    instanceCount, uint32                                    firstVerte, uint32                                    firstInstance);
-		public void CmdDrawIndeed( uint32                                    indeCount, uint32                                    instanceCount, uint32                                    firstInde, int32                                     verteOffset, uint32                                    firstInstance);
-		public void CmdDrawIndirect( Buffer                                    buffer, DeviceSize                                offset, uint32                                    drawCount, uint32                                    stride);
-		public void CmdDrawIndeedIndirect( Buffer                                    buffer, DeviceSize                                offset, uint32                                    drawCount, uint32                                    stride);
-		public void CmdDispatch( uint32 x , uint32 y, uint32 z);
-		public void CmdDispatchIndirect( Buffer                                    buffer, DeviceSize                                offset);
-		public void CmdCopyBuffer( Buffer                                    srcBuffer, Buffer                                    dstBuffer, uint32                                    regionCount, BufferCopy*                         pRegions);
-		public void CmdCopyImage( Image                                     srcImage, ImageLayout                               srcImageLayout, Image                                     dstImage, ImageLayout                               dstImageLayout, uint32                                    regionCount, ImageCopy*                          pRegions);
-		public void CmdBlitImage( Image                                     srcImage, ImageLayout                               srcImageLayout, Image                                     dstImage, ImageLayout                               dstImageLayout, uint32                                    regionCount, ImageBlit*                          pRegions, Filter                                    filter);
-		public void CmdCopyBufferToImage( Buffer                                    srcBuffer, Image                                     dstImage, ImageLayout                               dstImageLayout, uint32                                    regionCount, BufferImageCopy*                    pRegions);
-		public void CmdCopyImageToBuffer( Image                                     srcImage, ImageLayout                               srcImageLayout, Buffer                                    dstBuffer, uint32                                    regionCount, BufferImageCopy*                    pRegions);
-		public void CmdUpdateBuffer( Buffer                                    dstBuffer, DeviceSize                                dstOffset, DeviceSize                                dataSize, void*                                 pData);
-		public void CmdFillBuffer( Buffer                                    dstBuffer, DeviceSize                                dstOffset, DeviceSize                                size, uint32                                    data);
-		public void CmdClearColorImage( Image                                     image, ImageLayout                               imageLayout, ClearColorValue*                    pColor, uint32                                    rangeCount, ImageSubresourceRange*              pRanges);
-		public void CmdClearDepthStencilImage( Image                                     image, ImageLayout                               imageLayout, ClearDepthStencilValue*             pDepthStencil, uint32                                    rangeCount, ImageSubresourceRange*              pRanges);
-		public void CmdClearAttachments( uint32                                    attachmentCount, ClearAttachment*                    pAttachments, uint32                                    rectCount, ClearRect*                          pRects);
-		public void CmdResolveImage( Image                                     srcImage, ImageLayout                               srcImageLayout, Image                                     dstImage, ImageLayout                               dstImageLayout, uint32                                    regionCount, ImageResolve*                       pRegions);
-		public void CmdSetEvent( Event                                     event, PipelineStageFlags                        stageMask);
-		public void CmdResetEvent( Event                                     event, PipelineStageFlags                        stageMask);
-		public void CmdWaitEvents( uint32 eventCount, Event* pEvents, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, uint32 memoryBarrierCount, MemoryBarrier* pMemoryBarriers, uint32 bufferMemoryBarrierCount, BufferMemoryBarrier* pBufferMemoryBarriers, uint32 imageMemoryBarrierCount, ImageMemoryBarrier* pImageMemoryBarriers);
-		public void CmdPipelineBarrier( PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, uint32 memoryBarrierCount, MemoryBarrier* pMemoryBarriers, uint32 bufferMemoryBarrierCount, BufferMemoryBarrier* pBufferMemoryBarriers, uint32 imageMemoryBarrierCount, ImageMemoryBarrier* pImageMemoryBarriers);
-		public void CmdBeginQuery( QueryPool queryPool, uint32 query, QueryControlFlags flags);
-		public void CmdEndQuery( QueryPool queryPool, uint32 query);
-		public void CmdResetQueryPool( QueryPool queryPool, uint32 firstQuery, uint32 queryCount);
-		public void CmdWriteTimestamp( PipelineStageFlags pipelineStage, QueryPool queryPool, uint32 query);
-		public void CmdCopyQueryPoolResults( QueryPool queryPool, uint32 firstQuery, uint32 queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags);
-		public void CmdPushConstants( PipelineLayout layout, ShaderStageFlags stageFlags, uint32 offset, uint32 size, void* pValues);
-		public void CmdBeginRenderPass( RenderPassBeginInfo* pRenderPassBegin, SubpassContents contents);
-		public void CmdNetSubpass( SubpassContents contents);
-		public void CmdEndRenderPass();
-		public void CmdEecuteCommands( [CCode (array_length_pos = 0.9)] CommandBuffer[]                     pCommandBuffers);
-		public void CmdDebugMarkerBeginEXT( DebugMarkerMarkerInfoEXT*                 pMarkerInfo);
-		public void CmdDebugMarkerEndEXT( );
-		public void CmdDebugMarkerInsertEXT( DebugMarkerMarkerInfoEXT                 pMarkerInfo);
+		[CCode (cname = "vkResetCommandBuffer")]
+		public Result ResetCommandBuffer( CommandBufferResetFlags flags);
+		public void BindPipeline( PipelineBindPoint pipelineBindPoint, Pipeline pipeline);
+		public void SetViewport( uint32 firstViewport, [CCode (array_length_pos = 1.9)] Viewport[] pViewports);
+		public void SetScissor( uint32 firstScissor, [CCode (array_length_pos = 1.9)] Rect2D pScissors);
+		public void SetLineWidth( float lineWidth);
+		public void SetDepthBias( float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor);
+		public void SetBlendConstants( float blendConstants[4]);
+		public void SetDepthBounds( float minDepthBounds, float maDepthBounds);
+		public void SetStencilCompareMask( StencilFaceFlags faceMask, uint32 compareMask);
+		public void SetStencilWriteMask( StencilFaceFlags faceMask, uint32 writeMask);
+		public void SetStencilReference( StencilFaceFlags faceMask, uint32 reference);
+		public void BindDescriptorSets( PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32 firstSet, uint32 descriptorSetCount, DescriptorSet* pDescriptorSets, uint32 dynamicOffsetCount, uint32* pDynamicOffsets);
+		public void BindIndexBuffer( Buffer buffer, DeviceSize offset, IndexType indeType);
+		public void BindVertexBuffers( uint32 firstBinding, uint32 bindingCount, Buffer* pBuffers, DeviceSize* pOffsets);
+		public void Draw( uint32 vertexCount, uint32 instanceCount, uint32 firstVertex, uint32 firstInstance);
+		public void DrawIndexed( uint32 indeCount, uint32 instanceCount, uint32 firstIndex, int32 vertexOffset, uint32 firstInstance);
+		public void DrawIndirect( Buffer buffer, DeviceSize offset, uint32 drawCount, uint32 stride);
+		public void DrawIndexedIndirect( Buffer buffer, DeviceSize offset, uint32 drawCount, uint32 stride);
+		public void Dispatch( uint32 x , uint32 y, uint32 z);
+		public void DispatchIndirect( Buffer buffer, DeviceSize offset);
+		public void CopyBuffer( Buffer srcBuffer, Buffer dstBuffer, uint32 regionCount, BufferCopy* pRegions);
+		public void CopyImage( Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32 regionCount, ImageCopy* pRegions);
+		public void BlitImage( Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32 regionCount, ImageBlit* pRegions, Filter filter);
+		public void CopyBufferToImage( Buffer srcBuffer, Image dstImage, ImageLayout dstImageLayout, uint32 regionCount, BufferImageCopy* pRegions);
+		public void CopyImageToBuffer( Image srcImage, ImageLayout srcImageLayout, Buffer dstBuffer, uint32 regionCount, BufferImageCopy* pRegions);
+		public void UpdateBuffer( Buffer dstBuffer, DeviceSize dstOffset, DeviceSize dataSize, void* pData);
+		public void FillBuffer( Buffer dstBuffer, DeviceSize dstOffset, DeviceSize size, uint32 data);
+		public void ClearColorImage( Image image, ImageLayout imageLayout, ClearColorValue* pColor, uint32 rangeCount, ImageSubresourceRange* pRanges);
+		public void ClearDepthStencilImage( Image image, ImageLayout imageLayout, ClearDepthStencilValue* pDepthStencil, uint32 rangeCount, ImageSubresourceRange* pRanges);
+		public void ClearAttachments([CCode (array_length_pos = 0.9)] ClearAttachment[] pAttachments, [CCode (array_length_pos = 2.9)] ClearRect[] pRects);
+		public void ResolveImage( Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32 regionCount, ImageResolve* pRegions);
+		public void SetEvent( Event event, PipelineStageFlags stageMask);
+		public void ResetEvent( Event event, PipelineStageFlags stageMask);
+		public void WaitEvents( uint32 eventCount, Event* pEvents, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, uint32 memoryBarrierCount, MemoryBarrier* pMemoryBarriers, uint32 bufferMemoryBarrierCount, BufferMemoryBarrier* pBufferMemoryBarriers, uint32 imageMemoryBarrierCount, ImageMemoryBarrier* pImageMemoryBarriers);
+		public void PipelineBarrier( PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, uint32 memoryBarrierCount, MemoryBarrier* pMemoryBarriers, uint32 bufferMemoryBarrierCount, BufferMemoryBarrier* pBufferMemoryBarriers, uint32 imageMemoryBarrierCount, ImageMemoryBarrier* pImageMemoryBarriers);
+		public void BeginQuery( QueryPool queryPool, uint32 query, QueryControlFlags flags);
+		public void EndQuery( QueryPool queryPool, uint32 query);
+		public void ResetQueryPool( QueryPool queryPool, uint32 firstQuery, uint32 queryCount);
+		public void WriteTimestamp( PipelineStageFlags pipelineStage, QueryPool queryPool, uint32 query);
+		public void CopyQueryPoolResults( QueryPool queryPool, uint32 firstQuery, uint32 queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags);
+		public void PushConstants( PipelineLayout layout, ShaderStageFlags stageFlags, uint32 offset, uint32 size, void* pValues);
+		public void BeginRenderPass( RenderPassBeginInfo pRenderPassBegin, SubpassContents contents);
+		public void NetSubpass( SubpassContents contents);
+		public void EndRenderPass();
+		public void EecuteCommands( [CCode (array_length_pos = 0.9)] CommandBuffer[] pCommandBuffers);
+		public void DebugMarkerBeginEXT( DebugMarkerMarkerInfoEXT* pMarkerInfo);
+		public void DebugMarkerEndEXT( );
+		public void DebugMarkerInsertEXT( DebugMarkerMarkerInfoEXT pMarkerInfo);
 	}
 
 	[CCode (has_type_id = false)]
@@ -266,6 +280,7 @@ namespace Vulkan
 	public struct CommandPool {}
 
 	public const float _LOD_CLAMP_NONE;
+	// FIXME: figure out the type of the following constants
 	/*
 	public const REMAINING_MIP_LEVELS             (~0U);
 	public const REMAINING_ARRAY_LAYERS           (~0U);
@@ -387,7 +402,8 @@ namespace Vulkan
 		DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV
 	}
 
-	public enum SystemAllocationScope {
+	public enum SystemAllocationScope
+	{
 		COMMAND,
 		OBJECT,
 		CACHE,
@@ -395,7 +411,8 @@ namespace Vulkan
 		INSTANCE,
 	}
 
-	public enum InternalAllocationType {
+	public enum InternalAllocationType
+	{
 		EXECUTABLE,
 	}
 
@@ -623,7 +640,8 @@ namespace Vulkan
 		CONCURRENT,
 	}
 
-	public enum ImageLayout {
+	public enum ImageLayout
+	{
 		UNDEFINED,
 		GENERAL,
 		COLOR_ATTACHMENT_OPTIMAL,
@@ -636,7 +654,8 @@ namespace Vulkan
 		PRESENT_SRC_KHR,
 	}
 
-	public enum ImageViewType {
+	public enum ImageViewType
+	{
 		1D,
 		2D,
 		3D,
@@ -657,7 +676,7 @@ namespace Vulkan
 		A,
 	}
 
-	public enum VerteInputRate
+	public enum VertexInputRate
 	{
 		VERTEX,
 		INSTANCE,
@@ -685,12 +704,14 @@ namespace Vulkan
 		POINT,
 	}
 
-	public enum FrontFace {
+	public enum FrontFace
+	{
 		COUNTER_CLOCKWISE,
 		CLOCKWISE,
 	}
 
-	public enum CompareOp {
+	public enum CompareOp
+	{
 		NEVER,
 		LESS,
 		EQUAL,
@@ -701,7 +722,8 @@ namespace Vulkan
 		ALWAYS,
 	}
 
-	public enum StencilOp {
+	public enum StencilOp
+	{
 		KEEP,
 		ZERO,
 		REPLACE,
@@ -712,7 +734,8 @@ namespace Vulkan
 		DECREMENT_AND_WRAP,
 	}
 
-	public enum LogicOp {
+	public enum LogicOp
+	{
 		CLEAR,
 		AND,
 		AND_REVERSE,
@@ -731,7 +754,8 @@ namespace Vulkan
 		SET,
 	}
 
-	public enum BlendFactor {
+	public enum BlendFactor
+	{
 		ZERO,
 		ONE,
 		SRC_COLOR,
@@ -788,7 +812,8 @@ namespace Vulkan
 		LINEAR,
 	}
 
-	public enum SamplerAddressMode {
+	public enum SamplerAddressMode
+	{
 		REPEAT,
 		MIRRORED_REPEAT,
 		CLAMP_TO_EDGE,
@@ -796,7 +821,8 @@ namespace Vulkan
 		MIRROR_CLAMP_TO_EDGE,
 	}
 
-	public enum BorderColor {
+	public enum BorderColor
+	{
 		FLOAT_TRANSPARENT_BLACK,
 		INT_TRANSPARENT_BLACK,
 		FLOAT_OPAQUE_BLACK,
@@ -805,7 +831,8 @@ namespace Vulkan
 		INT_OPAQUE_WHITE,
 	}
 
-	public enum DescriptorType {
+	public enum DescriptorType
+	{
 		SAMPLER,
 		COMBINED_IMAGE_SAMPLER,
 		SAMPLED_IMAGE,
@@ -819,41 +846,47 @@ namespace Vulkan
 		INPUT_ATTACHMENT,
 	}
 
-	public enum AttachmentLoadOp {
+	public enum AttachmentLoadOp
+	{
 		LOAD_OP_LOAD,
 		LOAD_OP_CLEAR,
 		LOAD_OP_DONT_CARE,
 	}
 
-	public enum AttachmentStoreOp {
+	public enum AttachmentStoreOp
+	{
 		STORE_OP_STORE,
 		STORE_OP_DONT_CARE,
 	}
 
-	public enum PipelineBindPoint {
+	public enum PipelineBindPoint
+	{
 		PIPELINE_BIND_POINT_GRAPHICS,
 		PIPELINE_BIND_POINT_COMPUTE,
 	}
 
-	public enum CommandBufferLevel {
+	public enum CommandBufferLevel
+	{
 		COMMAND_BUFFER_LEVEL_PRIMARY,
 		COMMAND_BUFFER_LEVEL_SECONDARY
 	}
 
-	public enum IndeType
+	public enum IndexType
 	{
 		UINT16,
 		UINT32
 	}
 
-	public enum SubpassContents {
+	public enum SubpassContents
+	{
 		INLINE,
 		SECONDARY_COMMAND_BUFFERS
 	}
 
 	[Flags]
-	public enum InstanceCreateFlags {
-		NONE // FIXME
+	public enum InstanceCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
@@ -899,7 +932,8 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum SampleCountFlags {
+	public enum SampleCountFlags
+	{
 		1_BIT,
 		2_BIT,
 		4_BIT,
@@ -910,7 +944,8 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum QueueFlags {
+	public enum QueueFlags
+	{
 		GRAPHICS_BIT,
 		COMPUTE_BIT,
 		TRANSFER_BIT,
@@ -918,7 +953,8 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum MemoryPropertyFlags {
+	public enum MemoryPropertyFlags
+	{
 		DEVICE_LOCAL_BIT,
 		HOST_VISIBLE_BIT,
 		HOST_COHERENT_BIT,
@@ -933,13 +969,15 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum DeviceCreateFlags {
-		NONE // FIXME
+	public enum DeviceCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum DeviceQueueCreateFlags {
-		NONE // FIXME
+	public enum DeviceQueueCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
@@ -966,11 +1004,12 @@ namespace Vulkan
 
 	[Flags]
 	public enum MemoryMapFlags{
-		NONE // FIXME
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum ImageAspectFlags {
+	public enum ImageAspectFlags
+	{
 		COLOR_BIT,
 		DEPTH_BIT,
 		STENCIL_BIT,
@@ -978,39 +1017,46 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum SparseImageFormatFlags {
+	public enum SparseImageFormatFlags
+	{
 		SINGLE_MIPTAIL_BIT,
 		ALIGNED_MIP_SIZE_BIT,
 		NONSTANDARD_BLOCK_SIZE_BIT,
 	}
 
 	[Flags]
-	public enum SparseMemoryBindFlags {
+	public enum SparseMemoryBindFlags
+	{
 		SPARSE_MEMORY_BIND_METADATA_BIT,
 	}
 
 	[Flags]
-	public enum FenceCreateFlags {
+	public enum FenceCreateFlags
+	{
 		FENCE_CREATE_SIGNALED_BIT,
 	}
 
 	[Flags]
-	public enum SemaphoreCreateFlags {
-		NONE // FIXME
+	public enum SemaphoreCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum EventCreateFlags {
-		NONE // FIXME
+	public enum EventCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum QueryPoolCreateFlags {
-		NONE // FIXME
+	public enum QueryPoolCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum QueryPipelineStatisticFlags {
+	public enum QueryPipelineStatisticFlags
+	{
 		INPUT_ASSEMBLY_VERTICES_BIT,
 		INPUT_ASSEMBLY_PRIMITIVES_BIT,
 		VERTEX_SHADER_INVOCATIONS_BIT,
@@ -1025,7 +1071,8 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum QueryResultFlags {
+	public enum QueryResultFlags
+	{
 		64_BIT,
 		WAIT_BIT,
 		WITH_AVAILABILITY_BIT,
@@ -1033,14 +1080,16 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum BufferCreateFlags {
+	public enum BufferCreateFlags
+	{
 		BINDING_BIT,
 		RESIDENCY_BIT,
 		ALIASED_BIT,
 	}
 
 	[Flags]
-	public enum BufferUsageFlags {
+	public enum BufferUsageFlags
+	{
 		TRANSFER_SRC_BIT,
 		TRANSFER_DST_BIT,
 		UNIFORM_TEXEL_BUFFER_BIT,
@@ -1053,39 +1102,46 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum BufferViewCreateFlags {
-		NONE // FIXME
+	public enum BufferViewCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum ImageViewCreateFlags {
-		NONE // FIXME
+	public enum ImageViewCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum ShaderModuleCreateFlags {
-		NONE // FIXME
+	public enum ShaderModuleCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineCacheCreateFlags {
-		NONE // FIXME
+	public enum PipelineCacheCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineCreateFlags {
+	public enum PipelineCreateFlags
+	{
 		DISABLE_OPTIMIZATION_BIT,
 		ALLOW_DERIVATIVES_BIT,
 		DERIVATIVE_BIT,
 	}
 
 	[Flags]
-	public enum PipelineShaderStageCreateFlags {
-		NONE // FIXME
+	public enum PipelineShaderStageCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum ShaderStageFlags {
+	public enum ShaderStageFlags
+	{
 		VERTEX_BIT,
 		TESSELLATION_CONTROL_BIT,
 		TESSELLATION_EVALUATION_BIT,
@@ -1097,32 +1153,38 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum PipelineVerteInputStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineVertexInputStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineInputAssemblyStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineInputAssemblyStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineTessellationStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineTessellationStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineViewportStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineViewportStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineRasterizationStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineRasterizationStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum CullModeFlags {
+	public enum CullModeFlags
+	{
 		NONE,
 		FRONT_BIT,
 		BACK_BIT,
@@ -1130,22 +1192,26 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum PipelineMultisampleStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineMultisampleStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineDepthStencilStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineDepthStencilStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineColorBlendStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineColorBlendStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum ColorComponentFlags {
+	public enum ColorComponentFlags
+	{
 		R_BIT,
 		G_BIT,
 		B_BIT,
@@ -1153,57 +1219,68 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum PipelineDynamicStateCreateFlags {
-		NONE // FIXME
+	public enum PipelineDynamicStateCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum PipelineLayoutCreateFlags {
-		NONE // FIXME
+	public enum PipelineLayoutCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum SamplerCreateFlags {
-		NONE // FIXME
+	public enum SamplerCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum DescriptorSetLayoutCreateFlags {
-		NONE // FIXME
+	public enum DescriptorSetLayoutCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum DescriptorPoolCreateFlags {
+	public enum DescriptorPoolCreateFlags
+	{
 		DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
 	}
 
 	[Flags]
-	public enum DescriptorPoolResetFlags {
-		NONE // FIXME
+	public enum DescriptorPoolResetFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum FramebufferCreateFlags {
-		NONE // FIXME
+	public enum FramebufferCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum RenderPassCreateFlags {
-		NONE // FIXME
+	public enum RenderPassCreateFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum AttachmentDescriptionFlags {
+	public enum AttachmentDescriptionFlags
+	{
 		ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT,
 	}
 
 	[Flags]
-	public enum SubpassDescriptionFlags {
-		NONE // FIXME
+	public enum SubpassDescriptionFlags
+	{
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
-	public enum AccessFlags {
+	public enum AccessFlags
+	{
 		INDIRECT_COMMAND_READ_BIT,
 		INDEX_READ_BIT,
 		VERTEX_ATTRIBUTE_READ_BIT,
@@ -1224,53 +1301,61 @@ namespace Vulkan
 	}
 
 	[Flags]
-	public enum DependencyFlags {
+	public enum DependencyFlags
+	{
 		DEPENDENCY_BY_REGION_BIT,
 	}
 
 	[Flags]
-	public enum CommandPoolCreateFlags {
+	public enum CommandPoolCreateFlags
+	{
 		TRANSIENT_BIT,
 		RESET_COMMAND_BUFFER_BIT,
 	}
 
 	[Flags]
-	public enum CommandPoolResetFlags {
+	public enum CommandPoolResetFlags
+	{
 		COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT,
 	}
 
 	[Flags]
-	public enum CommandBufferUsageFlags {
+	public enum CommandBufferUsageFlags
+	{
 		ONE_TIME_SUBMIT_BIT,
 		RENDER_PASS_CONTINUE_BIT,
 		SIMULTANEOUS_USE_BIT,
 	}
 
 	[Flags]
-	public enum QueryControlFlags {
+	public enum QueryControlFlags
+	{
 		QUERY_CONTROL_PRECISE_BIT,
 	}
 
 	[Flags]
-	public enum CommandBufferResetFlags {
+	public enum CommandBufferResetFlags
+	{
 		COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT,
 	}
 
 	[Flags]
-	public enum StencilFaceFlags {
+	public enum StencilFaceFlags
+	{
 		STENCIL_FACE_FRONT_BIT,
 		STENCIL_FACE_BACK_BIT,
 		STENCIL_FRONT_AND_BACK,
 	}
 
-	public delegate void* PFN_vkAllocationFunction( void*                                       pUserData, size_t                                      size, size_t                                      alignment, SystemAllocationScope                     allocationScope);
-	public delegate void* PFN_vkReallocationFunction ( void*                                       pUserData, void*                                       pOriginal, size_t                                      size, size_t                                      alignment, SystemAllocationScope                     allocationScope);
-	public delegate void* PFN_vkFreeFunction( void*                                       pUserData, void*                                       pMemory);
-	public delegate void* PFN_vkInternalAllocationNotification( void*                                       pUserData, size_t                                      size, InternalAllocationType                    allocationType, SystemAllocationScope                     allocationScope);
-	public delegate void* PFN_vkInternalFreeNotification ( void*                                       pUserData, size_t                                      size, InternalAllocationType                    allocationType, SystemAllocationScope                     allocationScope);
+	public delegate void* PFN_vkAllocationFunction( void* pUserData, size_t size, size_t alignment, SystemAllocationScope allocationScope);
+	public delegate void* PFN_vkReallocationFunction ( void* pUserData, void* pOriginal, size_t size, size_t alignment, SystemAllocationScope allocationScope);
+	public delegate void* PFN_vkFreeFunction( void* pUserData, void* pMemory);
+	public delegate void* PFN_vkInternalAllocationNotification( void* pUserData, size_t size, InternalAllocationType allocationType, SystemAllocationScope allocationScope);
+	public delegate void* PFN_vkInternalFreeNotification ( void* pUserData, size_t size, InternalAllocationType allocationType, SystemAllocationScope allocationScope);
 
 	[CCode (has_type_id = false)]
-	public struct ApplicationInfo {
+	public struct ApplicationInfo
+	{
 		StructureType sType;
 		void*         pNet;
 		string        pApplicationName;
@@ -1281,15 +1366,16 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct InstanceCreateInfo {
+	public struct InstanceCreateInfo
+	{
 		StructureType       sType;
 		void*               pNet;
 		InstanceCreateFlags flags;
 		ApplicationInfo     pApplicationInfo;
 		[CCode (array_length_cname = "enabledLayerCount")]
 		string[]            ppEnabledLayerNames;
-		[CCode (array_length_cname = "enabledEtensionCount")]
-		string[]            ppEnabledEtensionNames;
+		[CCode (array_length_cname = "enabledExtensionCount")]
+		string[]            ppEnabledExtensionNames;
 	}
 
 	[CCode (has_type_id = false)]
@@ -1307,7 +1393,7 @@ namespace Vulkan
 	public struct PhysicalDeviceFeatures
 	{
 		bool robustBufferAccess;
-		bool fullDrawIndeUint32;
+		bool fullDrawIndexUint32;
 		bool imageCubeArray;
 		bool independentBlend;
 		bool geometryShader;
@@ -1331,7 +1417,7 @@ namespace Vulkan
 		bool tetureCompressionBC;
 		bool occlusionQueryPrecise;
 		bool pipelineStatisticsQuery;
-		bool vertePipelineStoresAndAtomics;
+		bool vertexPipelineStoresAndAtomics;
 		bool fragmentStoresAndAtomics;
 		bool shaderTessellationAndGeometryPointSize;
 		bool shaderImageGatherEtended;
@@ -1339,10 +1425,10 @@ namespace Vulkan
 		bool shaderStorageImageMultisample;
 		bool shaderStorageImageReadWithoutFormat;
 		bool shaderStorageImageWriteWithoutFormat;
-		bool shaderUniformBufferArrayDynamicIndeing;
-		bool shaderSampledImageArrayDynamicIndeing;
-		bool shaderStorageBufferArrayDynamicIndeing;
-		bool shaderStorageImageArrayDynamicIndeing;
+		bool shaderUniformBufferArrayDynamicIndexing;
+		bool shaderSampledImageArrayDynamicIndexing;
+		bool shaderStorageBufferArrayDynamicIndexing;
+		bool shaderStorageImageArrayDynamicIndexing;
 		bool shaderClipDistance;
 		bool shaderCullDistance;
 		bool shaderFloat64;
@@ -1364,22 +1450,25 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct FormatProperties {
+	public struct FormatProperties
+	{
 		FormatFeatureFlags    linearTilingFeatures;
 		FormatFeatureFlags    optimalTilingFeatures;
 		FormatFeatureFlags    bufferFeatures;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct Etent3D {
+	public struct Extent3D
+	{
 		uint32    width;
 		uint32    height;
 		uint32    depth;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ImageFormatProperties {
-		Etent3D            maEtent;
+	public struct ImageFormatProperties
+	{
+		Extent3D            maExtent;
 		uint32              maMipLevels;
 		uint32              maArrayLayers;
 		SampleCountFlags    sampleCounts;
@@ -1418,15 +1507,15 @@ namespace Vulkan
 		uint32           maDescriptorSetSampledImages;
 		uint32           maDescriptorSetStorageImages;
 		uint32           maDescriptorSetInputAttachments;
-		uint32           maVerteInputAttributes;
-		uint32           maVerteInputBindings;
-		uint32           maVerteInputAttributeOffset;
-		uint32           maVerteInputBindingStride;
-		uint32           maVerteOutputComponents;
+		uint32           maVertexInputAttributes;
+		uint32           maVertexInputBindings;
+		uint32           maVertexInputAttributeOffset;
+		uint32           maVertexInputBindingStride;
+		uint32           maVertexOutputComponents;
 		uint32           maTessellationGenerationLevel;
 		uint32           maTessellationPatchSize;
-		uint32           maTessellationControlPerVerteInputComponents;
-		uint32           maTessellationControlPerVerteOutputComponents;
+		uint32           maTessellationControlPerVertexInputComponents;
+		uint32           maTessellationControlPerVertexOutputComponents;
 		uint32           maTessellationControlPerPatchOutputComponents;
 		uint32           maTessellationControlTotalOutputComponents;
 		uint32           maTessellationEvaluationInputComponents;
@@ -1447,7 +1536,7 @@ namespace Vulkan
 		uint32           subPielPrecisionBits;
 		uint32           subTeelPrecisionBits;
 		uint32           mipmapPrecisionBits;
-		uint32           maDrawIndeedIndeValue;
+		uint32           maDrawIndexedIndexValue;
 		uint32           maDrawIndirectCount;
 		float            maSamplerLodBias;
 		float            maSamplerAnisotropy;
@@ -1522,27 +1611,31 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct QueueFamilyProperties {
+	public struct QueueFamilyProperties
+	{
 		QueueFlags    queueFlags;
 		uint32        queueCount;
 		uint32        timestampValidBits;
-		Etent3D      minImageTransferGranularity;
+		Extent3D      minImageTransferGranularity;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct MemoryType {
+	public struct MemoryType
+	{
 		MemoryPropertyFlags    propertyFlags;
-		uint32                 heapInde;
+		uint32                 heapIndex;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct MemoryHeap {
+	public struct MemoryHeap
+	{
 		DeviceSize         size;
 		MemoryHeapFlags    flags;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PhysicalDeviceMemoryProperties {
+	public struct PhysicalDeviceMemoryProperties
+	{
 		uint32        memoryTypeCount;
 		MemoryType    memoryTypes[MAX_MEMORY_TYPES];
 		uint32        memoryHeapCount;
@@ -1550,17 +1643,19 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct DeviceQueueCreateInfo {
+	public struct DeviceQueueCreateInfo
+	{
 		StructureType          sType;
 		void*                  pNet;
 		DeviceQueueCreateFlags flags;
-		uint32                 queueFamilyInde;
+		uint32                 queueFamilyIndex;
 		uint32                 queueCount;
 		float*                 pQueuePriorities;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct DeviceCreateInfo {
+	public struct DeviceCreateInfo
+	{
 		StructureType          sType;
 		void*                  pNet;
 		DeviceCreateFlags      flags;
@@ -1568,27 +1663,30 @@ namespace Vulkan
 		DeviceQueueCreateInfo  pQueueCreateInfos;
 		uint32                 enabledLayerCount;
 		string[]               ppEnabledLayerNames;
-		uint32                 enabledEtensionCount;
-		string[]               ppEnabledEtensionNames;
+		uint32                 enabledExtensionCount;
+		string[]               ppEnabledExtensionNames;
 		PhysicalDeviceFeatures pEnabledFeatures;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct EtensionProperties {
-		char        etensionName[MAX_EXTENSION_NAME_SIZE];
-		uint32    specVersion;
+	public struct ExtensionProperties
+	{
+		char   etensionName[MAX_EXTENSION_NAME_SIZE];
+		uint32 specVersion;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct LayerProperties {
-		char        layerName[MAX_EXTENSION_NAME_SIZE];
-		uint32    specVersion;
-		uint32    implementationVersion;
-		char        description[MAX_DESCRIPTION_SIZE];
+	public struct LayerProperties
+	{
+		char   layerName[MAX_EXTENSION_NAME_SIZE];
+		uint32 specVersion;
+		uint32 implementationVersion;
+		char   description[MAX_DESCRIPTION_SIZE];
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SubmitInfo {
+	public struct SubmitInfo
+	{
 		StructureType       sType;
 		void*               pNet;
 		[CCode (array_length_cname = "waitSemaphoreCount")]
@@ -1601,15 +1699,17 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct MemoryAllocateInfo {
+	public struct MemoryAllocateInfo
+	{
 		StructureType sType;
 		void*         pNet;
 		DeviceSize    allocationSize;
-		uint32        memoryTypeInde;
+		uint32        memoryTypeIndex;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct MappedMemoryRange {
+	public struct MappedMemoryRange
+	{
 		StructureType sType;
 		void*         pNet;
 		DeviceMemory  memory;
@@ -1618,21 +1718,24 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct MemoryRequirements {
+	public struct MemoryRequirements
+	{
 		DeviceSize    size;
 		DeviceSize    alignment;
 		uint32        memoryTypeBits;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseImageFormatProperties {
+	public struct SparseImageFormatProperties
+	{
 		ImageAspectFlags          aspectMask;
-		Etent3D                  imageGranularity;
+		Extent3D                  imageGranularity;
 		SparseImageFormatFlags    flags;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseImageMemoryRequirements {
+	public struct SparseImageMemoryRequirements
+	{
 		SparseImageFormatProperties    formatProperties;
 		uint32                         imageMipTailFirstLod;
 		DeviceSize                     imageMipTailSize;
@@ -1641,7 +1744,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseMemoryBind {
+	public struct SparseMemoryBind
+	{
 		DeviceSize               resourceOffset;
 		DeviceSize               size;
 		DeviceMemory             memory;
@@ -1650,52 +1754,59 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseBufferMemoryBindInfo {
+	public struct SparseBufferMemoryBindInfo
+	{
 		Buffer            buffer;
 		[CCode (array_length_cname = "bindCount")]
 		SparseMemoryBind[] pBinds;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseImageOpaqueMemoryBindInfo {
+	public struct SparseImageOpaqueMemoryBindInfo
+	{
 		Image             image;
 		[CCode (array_length_cname = "bindCount")]
 		SparseMemoryBind[] pBinds;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ImageSubresource {
+	public struct ImageSubresource
+	{
 		ImageAspectFlags    aspectMask;
 		uint32              mipLevel;
 		uint32              arrayLayer;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct Offset3D {
+	public struct Offset3D
+	{
 		int32    x;
 		int32    y;
 		int32    z;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseImageMemoryBind {
+	public struct SparseImageMemoryBind
+	{
 		ImageSubresource         subresource;
 		Offset3D                 offset;
-		Etent3D                 etent;
+		Extent3D                 etent;
 		DeviceMemory             memory;
 		DeviceSize               memoryOffset;
 		SparseMemoryBindFlags    flags;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SparseImageMemoryBindInfo {
+	public struct SparseImageMemoryBindInfo
+	{
 		Image                  image;
 		[CCode (array_length_cname = "bindCount")]
 		SparseImageMemoryBind[] pBinds;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct BindSparseInfo {
+	public struct BindSparseInfo
+	{
 		StructureType                     sType;
 		void*                             pNet;
 		uint32                            waitSemaphoreCount;
@@ -1711,28 +1822,32 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct FenceCreateInfo {
+	public struct FenceCreateInfo
+	{
 		StructureType    sType;
 		void*            pNet;
 		FenceCreateFlags flags;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SemaphoreCreateInfo {
+	public struct SemaphoreCreateInfo
+	{
 		StructureType        sType;
 		void*                pNet;
 		SemaphoreCreateFlags flags;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct EventCreateInfo {
+	public struct EventCreateInfo
+	{
 		StructureType    sType;
 		void*            pNet;
 		EventCreateFlags flags;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct QueryPoolCreateInfo {
+	public struct QueryPoolCreateInfo
+	{
 		StructureType               sType;
 		void*                       pNet;
 		QueryPoolCreateFlags        flags;
@@ -1742,19 +1857,21 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct BufferCreateInfo {
+	public struct BufferCreateInfo
+	{
 		StructureType     sType;
 		void*             pNet;
 		BufferCreateFlags flags;
 		DeviceSize        size;
 		BufferUsageFlags  usage;
 		SharingMode       sharingMode;
-		uint32            queueFamilyIndeCount;
+		uint32            queueFamilyIndexCount;
 		uint32*           pQueueFamilyIndices;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct BufferViewCreateInfo {
+	public struct BufferViewCreateInfo
+	{
 		StructureType         sType;
 		void*                 pNet;
 		BufferViewCreateFlags flags;
@@ -1765,26 +1882,28 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ImageCreateInfo {
+	public struct ImageCreateInfo
+	{
 		StructureType    sType;
 		void*            pNet;
 		ImageCreateFlags flags;
 		ImageType        imageType;
 		Format           format;
-		Etent3D         etent;
+		Extent3D         etent;
 		uint32           mipLevels;
 		uint32           arrayLayers;
 		SampleCountFlags samples;
 		ImageTiling      tiling;
 		ImageUsageFlags  usage;
 		SharingMode      sharingMode;
-		uint32           queueFamilyIndeCount;
+		uint32           queueFamilyIndexCount;
 		uint32*          pQueueFamilyIndices;
 		ImageLayout      initialLayout;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SubresourceLayout {
+	public struct SubresourceLayout
+	{
 		DeviceSize    offset;
 		DeviceSize    size;
 		DeviceSize    rowPitch;
@@ -1793,7 +1912,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ComponentMapping {
+	public struct ComponentMapping
+	{
 		ComponentSwizzle    r;
 		ComponentSwizzle    g;
 		ComponentSwizzle    b;
@@ -1801,7 +1921,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ImageSubresourceRange {
+	public struct ImageSubresourceRange
+	{
 		ImageAspectFlags    aspectMask;
 		uint32              baseMipLevel;
 		uint32              levelCount;
@@ -1810,7 +1931,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ImageViewCreateInfo {
+	public struct ImageViewCreateInfo
+	{
 		StructureType         sType;
 		void*                 pNet;
 		ImageViewCreateFlags  flags;
@@ -1822,7 +1944,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct ShaderModuleCreateInfo {
+	public struct ShaderModuleCreateInfo
+	{
 		StructureType           sType;
 		void*                   pNet;
 		ShaderModuleCreateFlags flags;
@@ -1831,7 +1954,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineCacheCreateInfo {
+	public struct PipelineCacheCreateInfo
+	{
 		StructureType            sType;
 		void*                    pNet;
 		PipelineCacheCreateFlags flags;
@@ -1840,22 +1964,25 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SpecializationMapEntry {
+	public struct SpecializationMapEntry
+	{
 		uint32    constantID;
 		uint32    offset;
 		size_t      size;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct SpecializationInfo {
-		uint32                  mapEntryCount;
-		SpecializationMapEntry* pMapEntries;
-		size_t                  dataSize;
-		void*                   pData;
+	public struct SpecializationInfo
+	{
+		[CCode (array_length_cname = "mapEntryCount")]
+		SpecializationMapEntry[] pMapEntries;
+		size_t                   dataSize;
+		void*                    pData;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineShaderStageCreateInfo {
+	public struct PipelineShaderStageCreateInfo
+	{
 		StructureType                  sType;
 		void*                          pNet;
 		PipelineShaderStageCreateFlags flags;
@@ -1866,14 +1993,16 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct VerteInputBindingDescription {
+	public struct VertexInputBindingDescription
+	{
 		uint32             binding;
 		uint32             stride;
-		VerteInputRate    inputRate;
+		VertexInputRate    inputRate;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct VerteInputAttributeDescription {
+	public struct VertexInputAttributeDescription
+	{
 		uint32    location;
 		uint32    binding;
 		Format    format;
@@ -1881,18 +2010,20 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineVerteInputStateCreateInfo {
+	public struct PipelineVertexInputStateCreateInfo
+	{
 		StructureType                       sType;
 		void*                               pNet;
-		PipelineVerteInputStateCreateFlags flags;
-		uint32                              verteBindingDescriptionCount;
-		VerteInputBindingDescription       pVerteBindingDescriptions;
-		uint32                              verteAttributeDescriptionCount;
-		VerteInputAttributeDescription     pVerteAttributeDescriptions;
+		PipelineVertexInputStateCreateFlags flags;
+		[CCode (array_length_cname = "vertexBindingDescriptionCount")]
+		VertexInputBindingDescription[]     pVertexBindingDescriptions;
+		[CCode (array_length_cname = "vertexAttributeDescriptionCount")]
+		VertexInputAttributeDescription[]   pVertexAttributeDescriptions;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineInputAssemblyStateCreateInfo {
+	public struct PipelineInputAssemblyStateCreateInfo
+	{
 		StructureType                         sType;
 		void*                                 pNet;
 		PipelineInputAssemblyStateCreateFlags flags;
@@ -1901,7 +2032,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineTessellationStateCreateInfo {
+	public struct PipelineTessellationStateCreateInfo
+	{
 		StructureType                        sType;
 		void*                                pNet;
 		PipelineTessellationStateCreateFlags flags;
@@ -1909,7 +2041,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct Viewport {
+	public struct Viewport
+	{
 		float    x;
 		float    y;
 		float    width;
@@ -1919,25 +2052,29 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct Offset2D {
+	public struct Offset2D
+	{
 		int32    x;
 		int32    y;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct Etent2D {
+	public struct Extent2D
+	{
 		uint32    width;
 		uint32    height;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct Rect2D {
+	public struct Rect2D
+	{
 		Offset2D    offset;
-		Etent2D    etent;
+		Extent2D    etent;
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineViewportStateCreateInfo {
+	public struct PipelineViewportStateCreateInfo
+	{
 		StructureType                    sType;
 		void*                            pNet;
 		PipelineViewportStateCreateFlags flags;
@@ -1948,7 +2085,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineRasterizationStateCreateInfo {
+	public struct PipelineRasterizationStateCreateInfo
+	{
 		StructureType                         sType;
 		void*                                 pNet;
 		PipelineRasterizationStateCreateFlags flags;
@@ -1965,7 +2103,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct PipelineMultisampleStateCreateInfo {
+	public struct PipelineMultisampleStateCreateInfo
+	{
 		StructureType                       sType;
 		void*                               pNet;
 		PipelineMultisampleStateCreateFlags flags;
@@ -1978,7 +2117,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct StencilOpState {
+	public struct StencilOpState
+	{
 		StencilOp    failOp;
 		StencilOp    passOp;
 		StencilOp    depthFailOp;
@@ -2044,7 +2184,7 @@ namespace Vulkan
 		PipelineCreateFlags                  flags;
 		[CCode (array_length_cname = "stageCount")]
 		PipelineShaderStageCreateInfo[]      pStages;
-		PipelineVerteInputStateCreateInfo   pVerteInputState;
+		PipelineVertexInputStateCreateInfo   pVertexInputState;
 		PipelineInputAssemblyStateCreateInfo pInputAssemblyState;
 		PipelineTessellationStateCreateInfo  pTessellationState;
 		PipelineViewportStateCreateInfo      pViewportState;
@@ -2057,7 +2197,7 @@ namespace Vulkan
 		RenderPass                           renderPass;
 		uint32                               subpass;
 		Pipeline                             basePipelineHandle;
-		int32                                basePipelineInde;
+		int32                                basePipelineIndex;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2068,7 +2208,7 @@ namespace Vulkan
 		PipelineShaderStageCreateInfo stage;
 		PipelineLayout                layout;
 		Pipeline                      basePipelineHandle;
-		int32                         basePipelineInde;
+		int32                         basePipelineIndex;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2147,11 +2287,11 @@ namespace Vulkan
 
 	[CCode (has_type_id = false)]
 	public struct DescriptorSetAllocateInfo {
-		StructureType                 sType;
-		void*                     pNet;
-		DescriptorPool                descriptorPool;
-		uint32                        descriptorSetCount;
-		DescriptorSetLayout*    pSetLayouts;
+		StructureType          sType;
+		void*                  pNet;
+		DescriptorPool         descriptorPool;
+		[CCode (array_length_cname = "descriptorSetCount")]
+		DescriptorSetLayout[] pSetLayouts;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2170,16 +2310,16 @@ namespace Vulkan
 
 	[CCode (has_type_id = false)]
 	public struct WriteDescriptorSet {
-		StructureType                  sType;
-		void*                      pNet;
-		DescriptorSet                  dstSet;
-		uint32                         dstBinding;
-		uint32                         dstArrayElement;
-		uint32                         descriptorCount;
-		DescriptorType                 descriptorType;
-		DescriptorImageInfo*     pImageInfo;
-		DescriptorBufferInfo*    pBufferInfo;
-		BufferView*              pTeelBufferView;
+		StructureType        sType;
+		void*                pNet;
+		DescriptorSet        dstSet;
+		uint32               dstBinding;
+		uint32               dstArrayElement;
+		uint32               descriptorCount;
+		DescriptorType       descriptorType;
+		DescriptorImageInfo  pImageInfo;
+		DescriptorBufferInfo pBufferInfo;
+		BufferView*          pTeelBufferView;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2210,15 +2350,15 @@ namespace Vulkan
 
 	[CCode (has_type_id = false)]
 	public struct AttachmentDescription {
-		AttachmentDescriptionFlags    flags;
-		Format                        format;
+		AttachmentDescriptionFlags flags;
+		Format                     format;
 		SampleCountFlags           samples;
-		AttachmentLoadOp              loadOp;
-		AttachmentStoreOp             storeOp;
-		AttachmentLoadOp              stencilLoadOp;
-		AttachmentStoreOp             stencilStoreOp;
-		ImageLayout                   initialLayout;
-		ImageLayout                   finalLayout;
+		AttachmentLoadOp           loadOp;
+		AttachmentStoreOp          storeOp;
+		AttachmentLoadOp           stencilLoadOp;
+		AttachmentStoreOp          stencilStoreOp;
+		ImageLayout                initialLayout;
+		ImageLayout                finalLayout;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2229,15 +2369,15 @@ namespace Vulkan
 
 	[CCode (has_type_id = false)]
 	public struct SubpassDescription {
-		SubpassDescriptionFlags       flags;
-		PipelineBindPoint             pipelineBindPoint;
-		uint32                        inputAttachmentCount;
+		SubpassDescriptionFlags flags;
+		PipelineBindPoint       pipelineBindPoint;
+		uint32                  inputAttachmentCount;
 		AttachmentReference*    pInputAttachments;
-		uint32                        colorAttachmentCount;
+		uint32                  colorAttachmentCount;
 		AttachmentReference*    pColorAttachments;
 		AttachmentReference*    pResolveAttachments;
 		AttachmentReference*    pDepthStencilAttachment;
-		uint32                        preserveAttachmentCount;
+		uint32                  preserveAttachmentCount;
 		uint32*                 pPreserveAttachments;
 	}
 
@@ -2255,51 +2395,51 @@ namespace Vulkan
 	[CCode (has_type_id = false)]
 	public struct RenderPassCreateInfo {
 		StructureType                   sType;
-		void*                       pNet;
-		RenderPassCreateFlags           flags;
-		uint32                          attachmentCount;
-		AttachmentDescription*    pAttachments;
-		uint32                          subpassCount;
-		SubpassDescription*       pSubpasses;
-		uint32                          dependencyCount;
-		SubpassDependency*        pDependencies;
+		void*                 pNet;
+		RenderPassCreateFlags flags;
+		[CCode (array_length_cname = "attachmentCount")]
+		AttachmentDescription[]   pAttachments;
+		[CCode (array_length_cname = "subpassCount")]
+		SubpassDescription[]      pSubpasses;
+		[CCode (array_length_cname = "dependencyCount")]
+		SubpassDependency[]       pDependencies;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct CommandPoolCreateInfo {
-		StructureType             sType;
-		void*                 pNet;
-		CommandPoolCreateFlags    flags;
-		uint32                    queueFamilyInde;
+		StructureType          sType;
+		void*                  pNet;
+		CommandPoolCreateFlags flags;
+		uint32                 queueFamilyIndex;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct CommandBufferAllocateInfo {
-		StructureType         sType;
-		void*             pNet;
-		CommandPool           commandPool;
-		CommandBufferLevel    level;
-		uint32                commandBufferCount;
+		StructureType      sType;
+		void*              pNet;
+		CommandPool        commandPool;
+		CommandBufferLevel level;
+		uint32             commandBufferCount;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct CommandBufferInheritanceInfo {
-		StructureType                  sType;
-		void*                      pNet;
-		RenderPass                     renderPass;
-		uint32                         subpass;
-		Framebuffer                    framebuffer;
-		bool                         occlusionQueryEnable;
-		QueryControlFlags              queryFlags;
-		QueryPipelineStatisticFlags    pipelineStatistics;
+		StructureType               sType;
+		void*                       pNet;
+		RenderPass                  renderPass;
+		uint32                      subpass;
+		Framebuffer                 framebuffer;
+		bool                        occlusionQueryEnable;
+		QueryControlFlags           queryFlags;
+		QueryPipelineStatisticFlags pipelineStatistics;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct CommandBufferBeginInfo {
-		StructureType                          sType;
-		void*                              pNet;
-		CommandBufferUsageFlags                flags;
-		CommandBufferInheritanceInfo*    pInheritanceInfo;
+		StructureType                sType;
+		void*                        pNet;
+		CommandBufferUsageFlags      flags;
+		CommandBufferInheritanceInfo pInheritanceInfo;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2323,7 +2463,7 @@ namespace Vulkan
 		Offset3D                  srcOffset;
 		ImageSubresourceLayers    dstSubresource;
 		Offset3D                  dstOffset;
-		Etent3D                  etent;
+		Extent3D                  etent;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2341,14 +2481,14 @@ namespace Vulkan
 		uint32                    bufferImageHeight;
 		ImageSubresourceLayers    imageSubresource;
 		Offset3D                  imageOffset;
-		Etent3D                  imageEtent;
+		Extent3D                  imageExtent;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct ClearColorValue {
-		float       float32[4];
-		int32     int32[4];
-		uint32    uint32[4];
+		float  float32[4];
+		int32  int32[4];
+		uint32 uint32[4];
 	}
 
 	[CCode (has_type_id = false)]
@@ -2383,7 +2523,7 @@ namespace Vulkan
 		Offset3D                  srcOffset;
 		ImageSubresourceLayers    dstSubresource;
 		Offset3D                  dstOffset;
-		Etent3D                  etent;
+		Extent3D                  etent;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2400,8 +2540,8 @@ namespace Vulkan
 		void*        pNet;
 		AccessFlags      srcAccessMask;
 		AccessFlags      dstAccessMask;
-		uint32           srcQueueFamilyInde;
-		uint32           dstQueueFamilyInde;
+		uint32           srcQueueFamilyIndex;
+		uint32           dstQueueFamilyIndex;
 		Buffer           buffer;
 		DeviceSize       offset;
 		DeviceSize       size;
@@ -2415,8 +2555,8 @@ namespace Vulkan
 		AccessFlags              dstAccessMask;
 		ImageLayout              oldLayout;
 		ImageLayout              newLayout;
-		uint32                   srcQueueFamilyInde;
-		uint32                   dstQueueFamilyInde;
+		uint32                   srcQueueFamilyIndex;
+		uint32                   dstQueueFamilyIndex;
 		Image                    image;
 		ImageSubresourceRange    subresourceRange;
 	}
@@ -2440,19 +2580,19 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct DrawIndeedIndirectCommand {
+	public struct DrawIndexedIndirectCommand {
 		uint32    indeCount;
 		uint32    instanceCount;
-		uint32    firstInde;
-		int32     verteOffset;
+		uint32    firstIndex;
+		int32     vertexOffset;
 		uint32    firstInstance;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct DrawIndirectCommand {
-		uint32    verteCount;
+		uint32    vertexCount;
 		uint32    instanceCount;
-		uint32    firstVerte;
+		uint32    firstVertex;
 		uint32    firstInstance;
 	}
 
@@ -2504,9 +2644,9 @@ namespace Vulkan
 	public struct SurfaceCapabilitiesKHR {
 		uint32                         minImageCount;
 		uint32                         maImageCount;
-		Etent2D                       currentEtent;
-		Etent2D                       minImageEtent;
-		Etent2D                       maImageEtent;
+		Extent2D                       currentExtent;
+		Extent2D                       minImageExtent;
+		Extent2D                       maImageExtent;
 		uint32                         maImageArrayLayers;
 		SurfaceTransformFlagsKHR       supportedTransforms;
 		SurfaceTransformFlagsKHR    currentTransform;
@@ -2520,11 +2660,6 @@ namespace Vulkan
 		ColorSpaceKHR    colorSpace;
 	}
 
-	public void DestroySurfaceKHR(
-		Instance                                  instance,
-		SurfaceKHR                                surface,
-		AllocationCallbacks                pAllocator);
-
 	public const int KHR_swapchain;
 	[CCode (has_type_id = false)]
 	public struct SwapchainKHR {}
@@ -2534,7 +2669,7 @@ namespace Vulkan
 
 	[Flags]
 	public enum SwapchainCreateFlagsKHR {
-		NONE // FIXME
+		NONE = 0 // FIXME
 	}
 
 	[CCode (has_type_id = false)]
@@ -2546,11 +2681,11 @@ namespace Vulkan
 		uint32                   minImageCount;
 		Format                   imageFormat;
 		ColorSpaceKHR            imageColorSpace;
-		Etent2D                 imageEtent;
+		Extent2D                 imageExtent;
 		uint32                   imageArrayLayers;
 		ImageUsageFlags          imageUsage;
 		SharingMode              imageSharingMode;
-		[CCode (array_length_cname = "queueFamilyIndeCount")]
+		[CCode (array_length_cname = "queueFamilyIndexCount")]
 		uint32[]                 pQueueFamilyIndices;
 		SurfaceTransformFlagsKHR preTransform;
 		CompositeAlphaFlagsKHR   compositeAlpha;
@@ -2571,34 +2706,7 @@ namespace Vulkan
 		Result*        pResults;
 	}
 
-	public Result CreateSwapchainKHR(
-		Device                                    device,
-		SwapchainCreateInfoKHR*             pCreateInfo,
-		AllocationCallbacks                pAllocator,
-		SwapchainKHR*                             pSwapchain);
-
-	public void DestroySwapchainKHR(
-		Device                                    device,
-		SwapchainKHR                              swapchain,
-		AllocationCallbacks                      pAllocator);
-
-	public Result GetSwapchainImagesKHR(
-		Device                                    device,
-		SwapchainKHR                              swapchain,
-		[CCode (array_length_cname = "pSwapchainImageCount")]
-		Image[]                                    pSwapchainImages);
-
-	public Result AcquireNetImageKHR(
-		Device                                    device,
-		SwapchainKHR                              swapchain,
-		uint64                                    timeout,
-		Semaphore                                 semaphore,
-		Fence                                     fence,
-		uint32*                                   pImageInde);
-
-	public Result QueuePresentKHR(
-		Queue                                     queue,
-		PresentInfoKHR*                     pPresentInfo);
+	public Result QueuePresentKHR( Queue                                     queue, PresentInfoKHR*                     pPresentInfo);
 
 	public const int KHR_display;
 	[CCode (has_type_id = false)]
@@ -2620,20 +2728,20 @@ namespace Vulkan
 
 	[Flags]
 	public enum DisplayModeCreateFlagsKHR {
-		NONE // FIXME
+		NONE = 0 // FIXME
 	}
 
 	[Flags]
 	public enum DisplaySurfaceCreateFlagsKHR {
-		NONE // FIXME
+		NONE = 0 // FIXME
 	}
 
 	[CCode (has_type_id = false)]
 	public struct DisplayPropertiesKHR {
 		DisplayKHR               display;
 		string                   displayName;
-		Etent2D                 physicalDimensions;
-		Etent2D                 physicalResolution;
+		Extent2D                 physicalDimensions;
+		Extent2D                 physicalResolution;
 		SurfaceTransformFlagsKHR supportedTransforms;
 		bool                     planeReorderPossible;
 		bool                     persistentContent;
@@ -2641,7 +2749,7 @@ namespace Vulkan
 
 	[CCode (has_type_id = false)]
 	public struct DisplayModeParametersKHR {
-		Etent2D    visibleRegion;
+		Extent2D    visibleRegion;
 		uint32      refreshRate;
 	}
 
@@ -2664,18 +2772,18 @@ namespace Vulkan
 		DisplayPlaneAlphaFlagsKHR supportedAlpha;
 		Offset2D                  minSrcPosition;
 		Offset2D                  maSrcPosition;
-		Etent2D                  minSrcEtent;
-		Etent2D                  maSrcEtent;
+		Extent2D                  minSrcExtent;
+		Extent2D                  maSrcExtent;
 		Offset2D                  minDstPosition;
 		Offset2D                  maDstPosition;
-		Etent2D                  minDstEtent;
-		Etent2D                  maDstEtent;
+		Extent2D                  minDstExtent;
+		Extent2D                  maDstExtent;
 	}
 
 	[CCode (has_type_id = false)]
 	public struct DisplayPlanePropertiesKHR {
 		DisplayKHR currentDisplay;
-		uint32     currentStackInde;
+		uint32     currentStackIndex;
 	}
 
 	[CCode (has_type_id = false)]
@@ -2684,12 +2792,12 @@ namespace Vulkan
 		void*                        pNet;
 		DisplaySurfaceCreateFlagsKHR flags;
 		DisplayModeKHR               displayMode;
-		uint32                       planeInde;
-		uint32                       planeStackInde;
+		uint32                       planeIndex;
+		uint32                       planeStackIndex;
 		SurfaceTransformFlagsKHR     transform;
 		float                        globalAlpha;
 		DisplayPlaneAlphaFlagsKHR    alphaMode;
-		Etent2D                     imageEtent;
+		Extent2D                     imageExtent;
 	}
 
 	public const int KHR_display_swapchain;
@@ -2705,13 +2813,6 @@ namespace Vulkan
 		bool          persistent;
 	}
 
-	public Result CreateSharedSwapchainsKHR(
-		Device                                    device,
-		uint32                                    swapchainCount,
-		SwapchainCreateInfoKHR*             pCreateInfos,
-		AllocationCallbacks                pAllocator,
-		SwapchainKHR*                             pSwapchains);
-
 	namespace Xlib
 	{
 		public const int KHR_lib_surface;
@@ -2721,7 +2822,7 @@ namespace Vulkan
 
 		[Flags]
 		public enum XlibSurfaceCreateFlagsKHR {
-			NONE // FIXME
+			NONE = 0 // FIXME
 		}
 
 		[CCode (has_type_id = false)]
@@ -2741,7 +2842,7 @@ namespace Vulkan
 
 		public bool GetPhysicalDeviceXlibPresentationSupportKHR(
 			PhysicalDevice                            physicalDevice,
-			uint32                                    queueFamilyInde,
+			uint32                                    queueFamilyIndex,
 			X.Display                                    dpy,
 			X.VisualID                                    visualID);
 	}
@@ -2755,7 +2856,7 @@ namespace Vulkan
 
 		[Flags]
 		public enum XcbSurfaceCreateFlagsKHR {
-			NONE // FIXME
+			NONE = 0 // FIXME
 		}
 
 		[CCode (has_type_id = false)]
@@ -2768,7 +2869,7 @@ namespace Vulkan
 		}
 
 		public Result CreateXcbSurfaceKHR( Instance                instance, XcbSurfaceCreateInfoKHR pCreateInfo, AllocationCallbacks     pAllocator, out SurfaceKHR          pSurface);
-		public bool GetPhysicalDeviceXcbPresentationSupportKHR( PhysicalDevice physicalDevice, uint32         queueFamilyInde, global::Xcb.Connection connection, global::Xcb.VisualID   visual_id);
+		public bool GetPhysicalDeviceXcbPresentationSupportKHR( PhysicalDevice physicalDevice, uint32         queueFamilyIndex, global::Xcb.Connection connection, global::Xcb.VisualID   visual_id);
 	}
 
 	namespace Wayland
@@ -2780,7 +2881,7 @@ namespace Vulkan
 
 		[Flags]
 		public enum WaylandSurfaceCreateFlagsKHR {
-			NONE // FIXME
+			NONE = 0 // FIXME
 		}
 
 		[CCode (has_type_id = false)]
@@ -2793,7 +2894,7 @@ namespace Vulkan
 		}
 
 		public Result CreateWaylandSurfaceKHR( Instance instance, WaylandSurfaceCreateInfoKHR pCreateInfo, AllocationCallbacks pAllocator, out SurfaceKHR pSurface);
-		public bool GetPhysicalDeviceWaylandPresentationSupportKHR( PhysicalDevice physicalDevice, uint32 queueFamilyInde, global::Wayland.Display display);
+		public bool GetPhysicalDeviceWaylandPresentationSupportKHR( PhysicalDevice physicalDevice, uint32 queueFamilyIndex, global::Wayland.Display display);
 	}
 
 	namespace Mir
@@ -2805,7 +2906,7 @@ namespace Vulkan
 
 		[Flags]
 		public enum MirSurfaceCreateFlagsKHR {
-			NONE // FIXME
+			NONE = 0 // FIXME
 		}
 
 		[CCode (has_type_id = false)]
@@ -2818,7 +2919,7 @@ namespace Vulkan
 		}
 
 		public Result CreateMirSurfaceKHR (Instance instance, MirSurfaceCreateInfoKHR pCreateInfo, AllocationCallbacks pAllocator, out SurfaceKHR pSurface);
-		public bool GetPhysicalDeviceMirPresentationSupportKHR( PhysicalDevice physicalDevice, uint32 queueFamilyInde, global::Mir.Connection connection);
+		public bool GetPhysicalDeviceMirPresentationSupportKHR( PhysicalDevice physicalDevice, uint32 queueFamilyIndex, global::Mir.Connection connection);
 	}
 
 	namespace Android
@@ -2830,7 +2931,7 @@ namespace Vulkan
 
 	[Flags]
 	public enum AndroidSurfaceCreateFlagsKHR {
-		NONE // FIXME
+		NONE = 0 // FIXME
 	}
 
 	[CCode (has_type_id = false)]
@@ -2858,7 +2959,7 @@ namespace Vulkan
 
 		[Flags]
 		public enum Win32SurfaceCreateFlagsKHR {
-			NONE // FIXME
+			NONE = 0 // FIXME
 		}
 
 		[CCode (has_type_id = false)]
@@ -2872,7 +2973,7 @@ namespace Vulkan
 		}
 
 		public Result CreateWin32SurfaceKHR( Instance instance, Win32SurfaceCreateInfoKHR* pCreateInfo, AllocationCallbacks pAllocator, out SurfaceKHR pSurface);
-		public bool GetPhysicalDeviceWin32PresentationSupportKHR( PhysicalDevice physicalDevice, uint32 queueFamilyInde);
+		public bool GetPhysicalDeviceWin32PresentationSupportKHR( PhysicalDevice physicalDevice, uint32 queueFamilyIndex);
 	}
 
 	public const int KHR_sampler_mirror_clamp_to_edge;
@@ -2888,7 +2989,8 @@ namespace Vulkan
 	// public const STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT
 
 
-	public enum DebugReportObjectTypeEXT {
+	public enum DebugReportObjectTypeEXT
+	{
 		UNKNOWN_EXT,
 		INSTANCE_EXT,
 		PHYSICAL_DEVICE_EXT,
@@ -2920,14 +3022,16 @@ namespace Vulkan
 		DEBUG_REPORT_EXT,
 	}
 
-	public enum DebugReportErrorEXT {
+	public enum DebugReportErrorEXT
+	{
 		ERROR_NONE_EXT,
 		ERROR_CALLBACK_REF_EXT,
 	}
 
 
 	[Flags]
-	public enum DebugReportFlagsEXT {
+	public enum DebugReportFlagsEXT
+	{
 		INFORMATION_BIT_EXT,
 		WARNING_BIT_EXT,
 		PERFORMANCE_WARNING_BIT_EXT,
@@ -2947,7 +3051,8 @@ namespace Vulkan
 
 
 	[CCode (has_type_id = false)]
-	public struct DebugReportCallbackCreateInfoEXT {
+	public struct DebugReportCallbackCreateInfoEXT
+	{
 		StructureType                sType;
 		void*                        pNet;
 		DebugReportFlagsEXT          flags;
@@ -2988,7 +3093,7 @@ namespace Vulkan
 	public const int AMD_SHADER_TRINARY_MINMAX_SPEC_VERSION;
 	public const string AMD_SHADER_TRINARY_MINMAX_EXTENSION_NAME;
 
-	public const int AMD_shader_eplicit_verte_parameter;
+	public const int AMD_shader_eplicit_vertex_parameter;
 	public const int AMD_SHADER_EXPLICIT_VERTEX_PARAMETER_SPEC_VERSION;
 	public const string AMD_SHADER_EXPLICIT_VERTEX_PARAMETER_EXTENSION_NAME;
 
@@ -2997,7 +3102,8 @@ namespace Vulkan
 	public const string EXT_DEBUG_MARKER_EXTENSION_NAME;
 
 	[CCode (has_type_id = false)]
-	public struct DebugMarkerObjectNameInfoEXT {
+	public struct DebugMarkerObjectNameInfoEXT
+	{
 		StructureType            sType;
 		void*                    pNet;
 		DebugReportObjectTypeEXT objectType;
@@ -3006,7 +3112,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct DebugMarkerObjectTagInfoEXT {
+	public struct DebugMarkerObjectTagInfoEXT
+	{
 		StructureType            sType;
 		void*                    pNet;
 		DebugReportObjectTypeEXT objectType;
@@ -3017,7 +3124,8 @@ namespace Vulkan
 	}
 
 	[CCode (has_type_id = false)]
-	public struct DebugMarkerMarkerInfoEXT {
+	public struct DebugMarkerMarkerInfoEXT
+	{
 		StructureType sType;
 		void*         pNet;
 		string        pMarkerName;
